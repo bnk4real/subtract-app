@@ -1,10 +1,13 @@
 import Link from "next/link";
+import type { Subscription } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { PaymentsCalendar } from "./PaymentsCalendar";
 
 type CalendarItem = { name: string; nextPaymentDate: Date | null };
 type CalendarEvent = { title: string; start: Date; end: Date };
+
+type UpcomingItem = Pick<Subscription, "id" | "name" | "nextPaymentDate" | "priceCents" | "currency">;
 
 function formatMoney(amountCents: number, currency: string) {
   const amount = amountCents / 100;
@@ -103,24 +106,24 @@ export default async function DashboardPage() {
             {upcoming.length === 0 ? (
               <p className="text-sm text-zinc-600">No upcoming payments yet.</p>
             ) : (
-              <ul className="space-y-2">
-                {upcoming.map((s) => (
-                  <li
-                    key={s.id}
-                    className="flex items-center justify-between rounded-md border border-zinc-200 px-3 py-2"
-                  >
-                    <div>
-                      <Link href={`/subscriptions/${s.id}`} className="text-sm font-medium hover:underline">
-                        {s.name}
-                      </Link>
-                      <div className="text-xs text-zinc-600">
-                        {s.nextPaymentDate ? new Date(s.nextPaymentDate).toLocaleDateString() : "—"}
-                      </div>
-                    </div>
-                    <div className="text-sm font-medium">{formatMoney(s.priceCents, s.currency)}</div>
-                  </li>
-                ))}
-              </ul>
+<ul className="space-y-2">
+  {upcoming.map((s: UpcomingItem) => (
+    <li
+      key={s.id}
+      className="flex items-center justify-between rounded-md border border-zinc-200 px-3 py-2"
+    >
+      <div>
+        <Link href={`/subscriptions/${s.id}`} className="text-sm font-medium hover:underline">
+          {s.name}
+        </Link>
+        <div className="text-xs text-zinc-600">
+          {s.nextPaymentDate ? new Date(s.nextPaymentDate).toLocaleDateString() : "—"}
+        </div>
+      </div>
+      <div className="text-sm font-medium">{formatMoney(s.priceCents, s.currency)}</div>
+    </li>
+  ))}
+</ul>
             )}
           </div>
         </div>
