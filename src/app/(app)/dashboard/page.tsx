@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { PaymentsCalendar } from "./PaymentsCalendar";
 
+type CalendarItem = { name: string; nextPaymentDate: Date | null };
+type CalendarEvent = { title: string; start: Date; end: Date };
+
 function formatMoney(amountCents: number, currency: string) {
   const amount = amountCents / 100;
   try {
@@ -81,15 +84,15 @@ export default async function DashboardPage() {
       <section className="grid gap-4">
         <PaymentsCalendar
           events={calendarItems
-            .map((item) => {
+            .map((item: CalendarItem) => {
               if (!item.nextPaymentDate) return null;
               return {
                 title: item.name,
                 start: item.nextPaymentDate,
                 end: item.nextPaymentDate,
-              };
+              } satisfies CalendarEvent;
             })
-            .filter((event): event is { title: string; start: Date; end: Date } => !!event)}
+            .filter((event): event is CalendarEvent => event !== null)}
         />
 
         <div className="rounded-lg border border-zinc-200 bg-white">
