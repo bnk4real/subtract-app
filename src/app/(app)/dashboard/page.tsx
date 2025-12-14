@@ -92,7 +92,7 @@ export default async function DashboardPage() {
                 end: item.nextPaymentDate,
               } satisfies CalendarEvent;
             })
-            .filter((event): event is CalendarEvent => event !== null)}
+            .filter((event: CalendarEvent | null): event is CalendarEvent => event !== null)}
         />
 
         <div className="rounded-lg border border-zinc-200 bg-white">
