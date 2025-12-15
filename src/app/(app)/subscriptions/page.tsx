@@ -2,11 +2,12 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { deleteSubscription } from "./actions";
+import { Subscription } from "@prisma/client";
 
 export default async function SubscriptionsPage() {
   const user = await requireUser();
 
-  const subscriptions = await prisma.subscription.findMany({
+  const subscriptions: Subscription[] = await prisma.subscription.findMany({
     where: { userId: user.userId },
     orderBy: [{ nextPaymentDate: "asc" }, { createdAt: "desc" }],
   });
