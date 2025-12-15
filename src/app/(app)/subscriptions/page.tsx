@@ -2,13 +2,12 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { deleteSubscription } from "./actions";
-import type { Prisma } from "@prisma/client";
 
 export default async function SubscriptionsPage() {
   const user = await requireUser();
 
-  // Use Prisma utility type to define the Subscription type
-  const subscriptions: Prisma.SubscriptionGetPayload<object>[] = await prisma.subscription.findMany({
+  // Dynamically infer the Subscription type using PrismaClient
+  const subscriptions = await prisma.subscription.findMany({
     where: { userId: user.userId },
     orderBy: [{ nextPaymentDate: "asc" }, { createdAt: "desc" }],
   });
